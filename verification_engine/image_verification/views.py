@@ -1,56 +1,86 @@
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
+# In classifier/views.py
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from PIL import Image
 import requests
-from PIL import Image as PILImage
+import tensorflow as tf
+import tensorflow_hub as hub
+import numpy as np
 from io import BytesIO
-import imagehash
 from .models import Image_Verification
+from .face_recognition_script import process_image
+from .face_recognition_utility import extract_face_encodings, load_image_from_url,calculate_image_hash
 from .serializers import ImageVerificationSerializer
-from datetime import datetime
 
-@csrf_exempt
-def image_verification(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            image_url = data.get('image_url')
-            if not image_url:
-                return JsonResponse({'error': 'No image URL provided'}, status=400)
-            
-            # Check if the image URL already exists in the database
-            existing_image = Image_Verification.objects.filter(image_source=image_url).first()
-            if existing_image:
-                # Retrieve similar images based on image hash
-                similar_images = Image_Verification.objects.filter(image_hash=existing_image.image_hash)
-                similar_image_urls = [img.image_source for img in similar_images]
-                return JsonResponse({'similar_image_urls': similar_image_urls}, status=200)
-            
+# Load the pre-trained model
+model = hub.load("https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/classification/5")
+labels_path = tf.keras.utils.get_file('ImageNetLabels.txt', 'https://storage.googleapis.com/download.tensorflow.org/data/ImageNetLabels.txt')
+with open(labels_path, 'r') as f:
+    labels = f.read().splitlines()
+
+def preprocess_image(image):
+    image = image.resize((224, 224))
+    image = np.array(image)
+    # Ensure image has 3 color channels (RGB)
+    if image.ndim == 2:  #
+        image = np.stack((image,) * 3, axis=-1)
+    elif image.shape[2] == 1: 
+        image = np.concatenate([image] * 3, axis=-1)
+    elif image.shape[2] > 3: 
+        image = image[:, :, :3]
+    image = image.astype(np.float32) / 255.0
+    image = np.expand_dims(image, axis=0)
+    return image
+
+
+def classify_image(image):
+    processed_image = preprocess_image(image)
+    predictions = model(processed_image)
+    predicted_index = np.argmax(predictions, axis=-1)[0]
+    return labels[predicted_index]
+
+class image_verification(APIView):
+    def post(self, request, *args, **kwargs):
+        image = load_image_from_url(request.data['image_url'])
+        face_encodings = extract_face_encodings(image)
+        if face_encodings:
+            print("face found")
+            result, status_code = process_image(request.data['image_url'])
+            return Response(result, status=status_code)
+          
+        else:
+            print("no face found")
             try:
+                image_url = request.data['image_url']
                 response = requests.get(image_url)
-                if response.status_code == 200:
-                    image = PILImage.open(BytesIO(response.content))
-                else:
-                    return JsonResponse({'error': 'Failed to download image'}, status=response.status_code)
-            except Exception as e:
-                return JsonResponse({'error': 'Error downloading image: {}'.format(str(e))}, status=500)
-            
-            # Generate image hash
-            image_hash = str(imagehash.phash(image))
-            
-            # Store the new image and its details
-            new_image = Image_Verification(
-                image_source=image_url,
-                date_time=datetime.now(),
-                image_hash=image_hash
-            )
-            new_image.save()
+                image = Image.open(BytesIO(response.content))
+            except (KeyError, ValueError, requests.exceptions.RequestException, OSError) as e:
+                return Response({"error": "Invalid request or unable to fetch image from URL"}, status=status.HTTP_400_BAD_REQUEST)
 
-            return JsonResponse({'success': 'Image saved successfully'}, status=201)
+            label = classify_image(image)
+            if 'dog' in label.lower() or 'cat' in label.lower():
+                result = {"result": "animal", "label": label}
+            elif 'person' in label.lower() or 'human' in label.lower():
+                result = {"result": "human", "label": label}
+            else:
+                result = {"result": "unknown", "label": label}
+
+            print(result, '----------------------')
+            result = {"image_source": image_url, "label": label,"image_hash" :calculate_image_hash(image_url) }
+            image_finder = Image_Verification.objects.filter(label=label)
+            if image_finder.exists():
+                if not Image_Verification.objects.filter(image_source=image_url):
+                    serializer = ImageVerificationSerializer(data=result)
+                    if serializer.is_valid():
+                        serializer.save()
+
+                serializer = ImageVerificationSerializer(image_finder, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
             
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON payload'}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': 'Unexpected error: {}'.format(str(e))}, status=500)
-    else:
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+            
+            serializer = ImageVerificationSerializer(data=result)
+            if serializer.is_valid():
+                serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
