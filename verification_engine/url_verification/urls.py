@@ -1,6 +1,8 @@
+# url_verification/urls.py
 from django.urls import path
-from .views import verify_url
+from . import views
 
 urlpatterns = [
-    path('verify/', verify_url, name='verify_url')
+    path('verify_url/', views.verify_url, name='verify_url'),
+    path('', views.verify_url, name='verify_url'),
 ]
