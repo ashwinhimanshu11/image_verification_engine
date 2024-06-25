@@ -6,4 +6,5 @@ class ImageVerificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image_Verification
         fields = '__all__'
+        # exclude = ['label'] 
 

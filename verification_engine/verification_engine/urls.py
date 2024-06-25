@@ -5,4 +5,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('image_verification.urls')),
+    path('api/', include('url_verification.urls')),
 ]

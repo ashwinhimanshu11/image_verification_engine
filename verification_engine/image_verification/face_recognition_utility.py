@@ -1,24 +1,27 @@
 import face_recognition
-from PIL import Image as PilImage
+from PIL import Image, UnidentifiedImageError
 import numpy as np
 import requests
 from PIL import Image
 from io import BytesIO
 import hashlib
 import base64
-
+import urllib.request
 
 def load_image_from_url(image_url):
     try:
-        response = requests.get(image_url)
-        image = Image.open(BytesIO(response.content))
-        # Convert image to RGB mode if it's not already in that format
-        if image.mode != 'RGB':
-            image = image.convert('RGB')
+        with urllib.request.urlopen(image_url) as url:
+            image_data = url.read()
+        image = Image.open(BytesIO(image_data))
+        image = image.convert('RGB')  # Ensure the image is in RGB format
         return image
-    except Exception as e:
-        # Handle exceptions (e.g., invalid URL, unable to fetch image, etc.)
-        raise e
+    except urllib.error.HTTPError as e:
+        if e.code == 403:
+            raise ValueError("Access to the image URL is forbidden.")
+        else:
+            raise ValueError(f"HTTP error occurred: {e}")
+    except (urllib.error.URLError, OSError, UnidentifiedImageError) as e:
+        raise ValueError("Could not load the image from the provided URL.")
 
 def extract_face_encodings(image):
     # Convert PIL image to numpy array
