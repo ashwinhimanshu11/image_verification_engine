@@ -1,0 +1,45 @@
+#root {
+  margin: 0;
+  padding: 0;
+}
+
+
+/* Custom CSS for adjusting card height */
+    form{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      }
+    .form-div{
+      display: flex;
+      justify-content: space-between;
+      width: 18rem;
+    }
+    input{
+      margin-right: 4px;
+    }
+    
+    
+    .card {
+      height: 100%;
+    }
+    .card-img-top {
+      object-fit: cover; 
+      height: 200px; 
+      width: 100%; 
+    }
+    .container{
+        width: 100%;
+    }
+    .title{
+        margin-left: 10px;
+    }
+    .scrollable-row {
+        display: flex;
+      overflow-x: auto; 
+      white-space: nowrap; 
+      -webkit-overflow-scrolling: touch; 
+      padding-bottom: 10px; 
+      
+    }
+
