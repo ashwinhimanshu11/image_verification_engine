@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Custom CSS for adjusting card height */
+    .card {
+      height: 100%;
+    }
+    .card-img-top {
+      object-fit: cover; 
+      height: 200px; 
+      width: 100%; 
+    }
+    .container{
+        width: 100%;
+    }
+    .title{
+        margin-left: 10px;
+    }
+    .scrollable-row {
+      display: flex;
+      overflow-x: auto; 
+      white-space: nowrap; 
+      -webkit-overflow-scrolling: touch; 
+      padding-bottom: 10px; 
+    }
+    .form-group{
+      margin-bottom: 0;
+    }
+    .centered-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- form -->
+  <div class="centered-content ">
+    <img src="gts-icon.png" alt="GTS Icon" class="mb-4 mt-4">
+    
+    <form action="submit.php" method="post" class="form-inline">
+      <div class="form-group mr-2">
+        <input type="text" class="form-control" id="inputData" name="inputData" placeholder="Enter your data" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Verify</button>
+    </form>
+  </div>
+
+  <!-- Images -->
+
+    <div>
+        <div class="title"><h1>Google</h1></div>
+    
+  <div class="container-fluid">
+    <div class="scrollable-row">
+      <div class="col-lg-3 col-md-6 mb-2 mt-4">
+        <div class="card h-100">
+          <img src="sample-img.jpg" class="card-img-top" alt="Image 1">
+          <div class="card-body text-center">
+            <h5 class="card-title">Card Title 1</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-2 mt-4">
+        <div class="card h-100">
+          <img src="sample-img.jpg" class="card-img-top" alt="Image 2">
+          <div class="card-body text-center">
+            <h5 class="card-title">Card Title 2</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-2 mt-4">
+        <div class="card h-100">
+          <img src="sample-img.jpg" class="card-img-top" alt="Image 3">
+          <div class="card-body text-center">
+            <h5 class="card-title">Card Title 3</h5>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6 mb-2 mt-4">
+        <div class="card h-100">
+          <img src="sample-img.jpg" class="card-img-top" alt="Image 3">
+          <div class="card-body text-center">
+            <h5 class="card-title">Card Title 3</h5>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6 mb-2 mt-4">
+        <div class="card h-100">
+          <img src="sample-img.jpg" class="card-img-top" alt="Image 3">
+          <div class="card-body text-center">
+            <h5 class="card-title">Card Title 3</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+      <div class="title">
+        <h1>Naver</h1>
+      </div>
+
+      <div class="container-fluid">
+        <div class="scrollable-row">
+          <div class="col-lg-3 col-md-6 mb-2 mt-4">
+            <div class="card h-100">
+              <img src="sample-img.jpg" class="card-img-top" alt="Image 1">
+              <div class="card-body text-center">
+                <h5 class="card-title">Card Title 1</h5>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 mb-2 mt-4">
+            <div class="card h-100">
+              <img src="sample-img.jpg" class="card-img-top" alt="Image 2">
+              <div class="card-body text-center">
+                <h5 class="card-title">Card Title 2</h5>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 mb-2 mt-4">
+            <div class="card h-100">
+              <img src="sample-img.jpg" class="card-img-top" alt="Image 3">
+              <div class="card-body text-center">
+                <h5 class="card-title">Card Title 3</h5>
+              </div>
+            </div>
+          </div>
+    
+          <div class="col-lg-3 col-md-6 mb-2 mt-4">
+            <div class="card h-100">
+              <img src="sample-img.jpg" class="card-img-top" alt="Image 3">
+              <div class="card-body text-center">
+                <h5 class="card-title">Card Title 3</h5>
+              </div>
+            </div>
+          </div>
+    
+          <div class="col-lg-3 col-md-6 mb-2 mt-4">
+            <div class="card h-100">
+              <img src="sample-img.jpg" class="card-img-top" alt="Image 3">
+              <div class="card-body text-center">
+                <h5 class="card-title">Card Title 3</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS and dependencies (optional) -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
