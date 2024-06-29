@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centered Form</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .center-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .form-container {
+            width: 100%;
+            max-width: 600px;
+        }
+        .form-control {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border-top-left-radius: 30px;
+            border-bottom-left-radius: 30px;
+        }
+        .input-group-text {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+        .btn-primary {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            border-top-right-radius: 30px;
+            border-bottom-right-radius: 30px;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .input-group-prepend img {
+            height: 100%;
+            cursor: pointer;
+        }
+        .drop-zone {
+            display: none;
+            margin-top: 10px;
+            border: 1px solid none;
+            border-radius: 30px;
+            padding: 20px;
+            text-align: center;
+            height: 20rem;
+            background-color: rgb(241, 239, 239);
+        }
+        .drop-zone.dragging {
+            background-color: rgb(160, 158, 158);
+        }
+        .drop-zone img{
+            height: 40px;
+            margin-top: 70px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container center-form">
+        <div class="form-container">
+            <form class="d-flex">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="inputField" placeholder="Enter text">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="lensButton">
+                            <img src="google (1).png" alt="lens" style="height:24px;">
+                        </span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+
+            <div class="drop-zone" id="dropZone"> 
+                <p>Drop your image here</p>
+                <img src="action.png" alt="">
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        const lensButton = document.getElementById('lensButton');
+        const dropZone = document.getElementById('dropZone');
+
+        lensButton.addEventListener('click', function() {
+            if (dropZone.style.display === 'block') {
+                dropZone.style.display = 'none';
+            } else {
+                dropZone.style.display = 'block';
+            }
+        });
+    dropZone.addEventListener('dragover', (event) =>{
+        event.preventDefault();
+        dropZone.classList.add('dragging');
+    });
+
+    dropZone.addEventListener('dragleave', (event)=>{
+        event.preventDefault();
+        dropZone.classList.remove('dragging');
+    });
+
+    dropZone.addEventListener('drop', (event)=>{
+        event.preventDefault();
+        dropZone.classList.remove('dragging');
+        dropZone.style.display = 'none';
+
+        const files = event.dataTransfer.files;
+        if(files.length > 0){
+            console.log('Files dropped:', files);
+        }
+    })
+
+
+    </script>
+</body>
+</html>
