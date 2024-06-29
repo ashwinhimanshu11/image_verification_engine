@@ -1,10 +1,10 @@
-# url_verification/views.py
 from django.shortcuts import render
 from django.http import JsonResponse
 from .models import URL
 from .utils import search_similar_images
 from datetime import datetime
 import pytz
+from asgiref.sync import sync_to_async
 
 def get_ist_time(utc_time):
     ist = pytz.timezone('Asia/Kolkata')
@@ -12,13 +12,13 @@ def get_ist_time(utc_time):
     ist_time = utc_time.astimezone(ist)
     return ist_time.strftime('%B %d, %Y, %I:%M %p')
 
-def verify_url(request):
+async def verify_url(request):
     if request.method == "POST":
         url = request.POST.get('url')
         source = request.POST.get('source', 'manual')
         try:
-            url_obj, created = URL.objects.get_or_create(url=url, defaults={'source': source})
-            similar_images = search_similar_images(url)
+            url_obj, created = await sync_to_async(URL.objects.get_or_create)(url=url, defaults={'source': source})
+            similar_images = await search_similar_images(url)
             
             # Format date_time_added to IST
             date_time_added_ist = get_ist_time(url_obj.date_time_added)
@@ -32,4 +32,3 @@ def verify_url(request):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
     return render(request, 'url_verification/verify_url.html')
-
