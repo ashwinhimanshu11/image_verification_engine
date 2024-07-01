@@ -155,13 +155,11 @@
 
 
 
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from PIL import Image
 import requests
-import urllib.request
 import tensorflow as tf
 import tensorflow_hub as hub
 import numpy as np
@@ -179,13 +177,15 @@ labels = []
 
 def load_model():
     global model, labels
-    model_url = "https://tfhub.dev/google/tf2-preview/mobilenet_v2/classification/4"
+    model_url = "https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/classification/4"
     try:
+        print("Attempting to load model from URL:", model_url)
         model = hub.load(model_url)
         print("Model loaded successfully.")
         labels_path = tf.keras.utils.get_file('ImageNetLabels.txt', 'https://storage.googleapis.com/download.tensorflow.org/data/ImageNetLabels.txt')
         with open(labels_path, 'r') as f:
             labels = f.read().splitlines()
+        print(f"Labels loaded successfully with {len(labels)} labels.")
     except Exception as e:
         print(f"Error loading model from {model_url}: {e}")
         import os
@@ -198,6 +198,7 @@ def load_model():
             print("Directory does not exist.")
 
 load_model()
+print(f"Model: {model}")
 
 def preprocess_image(image):
     image = image.resize((224, 224))
@@ -213,6 +214,8 @@ def preprocess_image(image):
     return image
 
 def classify_image(image, top_k=5):
+    if model is None:
+        raise RuntimeError("The model has not been loaded successfully.")
     processed_image = preprocess_image(image)
     predictions = model(processed_image)
     predictions = np.array(predictions)
@@ -229,7 +232,9 @@ class image_verification(APIView):
             return Response({"error": "Invalid request or unable to fetch image from URL"}, status=status.HTTP_400_BAD_REQUEST)
 
         face_encodings = extract_face_encodings(image)
-        if face_encodings:
+        print("this is length of face------------------>", len(face_encodings[0]))
+      
+        if len(face_encodings[0]) > 0:
             result, status_code = process_image(image_url)
             if status_code == 200:
                 matched_images = result.get('matched_images', [])
@@ -242,6 +247,7 @@ class image_verification(APIView):
                 return Response(result, status=status_code)
         else:
             try:
+                print("no face found")
                 labels = classify_image(image)
             except RuntimeError as e:
                 return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

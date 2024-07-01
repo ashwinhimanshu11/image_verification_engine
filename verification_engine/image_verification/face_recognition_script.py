@@ -126,11 +126,15 @@ def process_image(image_url):
     matched_images = []
     for known_face, known_encoding in zip(known_faces, known_encodings):
         distance = face_recognition.face_distance([known_encoding], face_encoding)[0]
-        if distance <=0.63:  # Threshold for face matching
+
+        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4444
+        if distance <0.55:  # Threshold for face matching
             matched_images.append((known_face, distance))
 
     matched_images.sort(key=lambda x: x[1])
     matched_images = [matched_image[0] for matched_image in matched_images]
+
+    hold = False
 
     if matched_images:
         existing_url = Image_Verification.objects.filter(image_source=image_url)
@@ -145,8 +149,12 @@ def process_image(image_url):
             )
             new_image.set_meta_data(face_encoding)
             new_image.save()
+            hold=True
 
         serializer = ImageVerificationSerializer(matched_images, many=True)
+        # if(hold):
+        #     return {'new image inserted and matched_images': serializer.data}, 200
+        # else:
         return {'matched_images': serializer.data}, 200
     else:
         image_hash = calculate_image_hash(image_url)

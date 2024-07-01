@@ -140,17 +140,24 @@ def extract_face_encodings(image):
     sharpened_image = sharpen_image(image_np)
     best_encodings = []
     best_locations = []
+    count =1
+ 
 
     for angle in range(0, 360, 15):
-        rotated_image = rotate_image(sharpened_image, angle)
+        rotated_image = rotate_image(image_np, angle)
 
         face_locations = face_recognition.face_locations(rotated_image)
         face_encodings = face_recognition.face_encodings(rotated_image, face_locations)
-        if face_encodings:
-            if len(face_encodings) > len(best_encodings):
-                best_encodings = face_encodings
-                best_locations = face_locations
-    return best_encodings, best_locations
+        # count+=1
+        # print(count)
+
+        # if face_encodings:
+        #     if len(face_encodings) > len(best_encodings):
+        #         print("!!!!!!!!!!!!!!!!!!! ", count)
+        #         best_encodings = face_encodings
+        #         best_locations = face_locations
+        
+    return face_encodings, face_locations
 
 def match_face(face_encoding, known_encodings):
     matches = face_recognition.compare_faces(known_encodings, face_encoding)
