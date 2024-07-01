@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Face Verification Results</title>
+</head>
+<body>
+    <h1>Face Verification Results</h1>
+    {% if new_image %}
+        <h2>New Image Inserted</h2>
+        <img src="{{ new_image }}" alt="New Image">
+    {% endif %}
+    {% if matched_images %}
+        <h2>Matched Images</h2>
+        <ul>
+            {% for image in matched_images %}
+                <li><img src="{{ image.image_source }}" alt="Matched Image"></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>

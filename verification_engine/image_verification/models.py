@@ -7,7 +7,7 @@ class Image_Verification(models.Model):
     meta_data = models.JSONField(null=True)
     date_time = models.DateTimeField(auto_now_add=True)
     image_hash = models.CharField(max_length=255, null=True)
-    label= models.CharField(max_length=255,  null=True)
+    labels= models.JSONField( blank=True, null=True) # type: ignore
     face_encoding=models.TextField(null=True)
 
     def set_meta_data(self, face_encoding):
